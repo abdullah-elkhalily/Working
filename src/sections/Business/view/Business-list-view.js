@@ -48,9 +48,9 @@ import logo from 'src/components/logo';
 const TABLE_HEAD = [
   { id: 'name', label: 'Store' , maxWidth: 15},
   { id: 'status', label: 'Status', width: 110 },
-  { id: 'qty', label: 'Quantity', width: 140 },
-  { id: 'price', label: 'Price', width: 140 },
-  { id: 'price_before_discount', label: 'Price before discount', width: 140 },
+  { id: 'Address', label: 'Address', width: 140 },
+  { id: 'Country', label: 'Country', width: 140 },
+  { id: 'Mobile', label: 'Mobile_Number', width: 140 },
   { id: 'no_of_orders', label: 'Orders', width: 140 },
   { id: '', width: 88 },
 
@@ -183,22 +183,22 @@ export default function BusinessListView() {
     setFilters(defaultFilters);
   }, []);
 
-  const increaseQuantityBy50 = useCallback(async (id, qty) => {
-    const requestBody = {qty: qty + 50}
-    const {success, data} = await updateBusiness(id, requestBody);
-    if(success){
-      setTableData(prevTableData => {
-        const index = prevTableData.findIndex(obj => obj.id === id);
-        if(index !== -1){
-          const updatedTableData = [...prevTableData];
-          updatedTableData[index] = { ...updatedTableData[index], qty: data.qty };
-          return updatedTableData;
-        }else {
-          return prevTableData
-        } 
-      });
-    }
-  }, []);
+  // const increaseQuantityBy50 = useCallback(async (id, qty) => {
+  //   const requestBody = {qty: qty + 50}
+  //   const {success, data} = await updateBusiness(id, requestBody);
+  //   if(success){
+  //     setTableData(prevTableData => {
+  //       const index = prevTableData.findIndex(obj => obj.id === id);
+  //       if(index !== -1){
+  //         const updatedTableData = [...prevTableData];
+  //         updatedTableData[index] = { ...updatedTableData[index], qty: data.qty };
+  //         return updatedTableData;
+  //       }else {
+  //         return prevTableData
+  //       } 
+  //     });
+  //   }
+  // }, []);
 
   return (
     <>
@@ -305,7 +305,7 @@ export default function BusinessListView() {
                             onDeleteRow={() => handleDeleteRow(row.id)}
                             onEditRow={() => handleEditRow(row.id)}
                             onViewRow={() => handleViewRow(row.id)}
-                            onUpdateQty={() => increaseQuantityBy50(row.id, row.qty)}
+                            // onUpdateQty={() => increaseQuantityBy50(row.id, row.qty)}
                           />
                         ))}
                     </>

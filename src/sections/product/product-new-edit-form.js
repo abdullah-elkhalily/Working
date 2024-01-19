@@ -125,7 +125,12 @@ export default function ProductNewEditForm({ currentProduct }) {
     }
   }, [currentProduct?.taxes, includeTaxes, setValue]);
 
+
+
+
   const onSubmit = handleSubmit(async (data) => {
+
+ 
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
@@ -136,6 +141,11 @@ export default function ProductNewEditForm({ currentProduct }) {
       console.error(error);
     }
   });
+
+
+
+
+
 
   const handleDrop = useCallback(
     (acceptedFiles) => {
@@ -253,6 +263,8 @@ export default function ProductNewEditForm({ currentProduct }) {
                 InputLabelProps={{ shrink: true }}
               />
 
+
+
               <RHFSelect native name="category" label="Category" InputLabelProps={{ shrink: true }}>
                 {PRODUCT_CATEGORY_GROUP_OPTIONS.map((category) => (
                   <optgroup key={category.group} label={category.group}>
@@ -264,6 +276,10 @@ export default function ProductNewEditForm({ currentProduct }) {
                   </optgroup>
                 ))}
               </RHFSelect>
+
+
+
+
 
               <RHFMultiSelect
                 checkbox

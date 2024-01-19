@@ -9,11 +9,6 @@ export function useGetBusiness(page, per_page) {
   const URL = [endpoints.Business.list, { params: { page, per_page } }];
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
 
-
-
-
- 
-  
   const memoizedValue = useMemo(
     () => ({
       Business: data?.data || [],

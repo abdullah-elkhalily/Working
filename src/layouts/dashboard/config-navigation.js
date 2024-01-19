@@ -112,13 +112,13 @@ export function useNavData() {
             icon: ICONS.product,
             children: [
               { title: t("list"), path: paths.dashboard.Business.root },
-              {
-                title: t("details"),
-                path: paths.dashboard.Business.demo.details,
-              },
-              { title: t("create"), path: paths.dashboard.Business.new },
-              { title: t("edit"), path: paths.dashboard.Business.demo.edit },
-            ],
+               ],
+            //   { title: t("details"),
+            //     path: paths.dashboard.Business.demo.details,
+            //   },
+            //   { title: t("create"), path: paths.dashboard.Business.new },
+            //   { title: t("edit"), path: paths.dashboard.Business.demo.edit },
+           
           },
 
 
