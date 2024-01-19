@@ -7,15 +7,15 @@ import { yupResolver } from "@hookform/resolvers/yup";
 // @mui
 import LoadingButton from "@mui/lab/LoadingButton";
 import Box from "@mui/material/Box";
-import Chip from "@mui/material/Chip";
+
 import Card from "@mui/material/Card";
 import Stack from "@mui/material/Stack";
 import Switch from "@mui/material/Switch";
-import Divider from "@mui/material/Divider";
+
 import Grid from "@mui/material/Unstable_Grid2";
 import CardHeader from "@mui/material/CardHeader";
 import Typography from "@mui/material/Typography";
-import InputAdornment from "@mui/material/InputAdornment";
+
 import FormControlLabel from "@mui/material/FormControlLabel";
 // routes
 import { paths } from "src/routes/paths";
@@ -23,25 +23,22 @@ import { paths } from "src/routes/paths";
 import { useResponsive } from "src/hooks/use-responsive";
 // _mock
 import {
-  _tags,
+  
   countriesData,
-  PRODUCT_SIZE_OPTIONS,
-  PRODUCT_GENDER_OPTIONS,
-  PRODUCT_COLOR_NAME_OPTIONS,
-  PRODUCT_CATEGORY_GROUP_OPTIONS,
+
 } from "src/_mock";
 // components
 import { useSnackbar } from "src/components/snackbar";
 import { useRouter } from "src/routes/hooks";
 import FormProvider, {
   RHFSelect,
-  RHFEditor,
+
   RHFUpload,
-  RHFSwitch,
+
   RHFTextField,
-  RHFMultiSelect,
-  RHFAutocomplete,
-  RHFMultiCheckbox,
+
+
+ 
 } from "src/components/hook-form";
 
 // ----------------------------------------------------------------------
@@ -187,9 +184,6 @@ export default function BusinessNewEditForm({ currentBusiness }) {
     setValue("images", []);
   }, [setValue]);
 
-  // const handleChangeIncludeTaxes = useCallback((event) => {
-  //   setIncludeTaxes(event.target.checked);
-  // }, []);
 
   const renderDetails = (
     <>
@@ -218,10 +212,7 @@ export default function BusinessNewEditForm({ currentBusiness }) {
               rows={4}
             />
 
-            {/* <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Content</Typography>
-              <RHFEditor simple name="description" />
-            </Stack> */}
+        
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Images</Typography>
@@ -315,8 +306,7 @@ export default function BusinessNewEditForm({ currentBusiness }) {
                 placeholder="Mobile"
                 type="number"
                 InputLabelProps={{ shrink: true }}
-                value={mobileNumber} 
-                onChange={handleMobileChange} 
+              
               />
             
             </Box>
@@ -326,85 +316,8 @@ export default function BusinessNewEditForm({ currentBusiness }) {
     </>
   );
 
-  //   <>
-  //     {mdUp && (
-  //       <Grid md={4}>
-  //         <Typography variant="h6" sx={{ mb: 0.5 }}>
-  //           Pricing
-  //         </Typography>
-  //         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-  //           Price related inputs
-  //         </Typography>
-  //       </Grid>
-  //     )}
+ 
 
-  //     <Grid xs={12} md={8}>
-  //       <Card>
-  //         {!mdUp && <CardHeader title="Pricing" />}
-
-  //         <Stack spacing={3} sx={{ p: 3 }}>
-  //           <RHFTextField
-  //             name="price"
-  //             label="Regular Price"
-  //             placeholder="0.00"
-  //             type="number"
-  //             InputLabelProps={{ shrink: true }}
-  //             InputProps={{
-  //               startAdornment: (
-  //                 <InputAdornment position="start">
-  //                   <Box component="span" sx={{ color: 'text.disabled' }}>
-  //                     $
-  //                   </Box>
-  //                 </InputAdornment>
-  //               ),
-  //             }}
-  //           />
-
-  //           <RHFTextField
-  //             name="priceSale"
-  //             label="Sale Price"
-  //             placeholder="0.00"
-  //             type="number"
-  //             InputLabelProps={{ shrink: true }}
-  //             InputProps={{
-  //               startAdornment: (
-  //                 <InputAdornment position="start">
-  //                   <Box component="span" sx={{ color: 'text.disabled' }}>
-  //                     $
-  //                   </Box>
-  //                 </InputAdornment>
-  //               ),
-  //             }}
-  //           />
-
-  //           <FormControlLabel
-  //             control={<Switch checked={includeTaxes} onChange={handleChangeIncludeTaxes} />}
-  //             label="Price includes taxes"
-  //           />
-
-  //           {!includeTaxes && (
-  //             <RHFTextField
-  //               name="taxes"
-  //               label="Tax (%)"
-  //               placeholder="0.00"
-  //               type="number"
-  //               InputLabelProps={{ shrink: true }}
-  //               InputProps={{
-  //                 startAdornment: (
-  //                   <InputAdornment position="start">
-  //                     <Box component="span" sx={{ color: 'text.disabled' }}>
-  //                       %
-  //                     </Box>
-  //                   </InputAdornment>
-  //                 ),
-  //               }}
-  //             />
-  //           )}
-  //         </Stack>
-  //       </Card>
-  //     </Grid>
-  //   </>
-  // );
 
   const renderActions = (
     <>
@@ -435,8 +348,7 @@ export default function BusinessNewEditForm({ currentBusiness }) {
 
         {renderProperties}
 
-        {/*   {renderPricing}*/}
-
+  
         {renderActions}
       </Grid>
     </FormProvider>
