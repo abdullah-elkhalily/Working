@@ -69,8 +69,10 @@ export const endpoints = {
 
   Business: {
     list: '/api/owner/my-businesses',
+    create:'/api/business/create',
     delete: '/api/business/delete',
-    details: '/api/business/details',
+    details: '/api/business/',
+
     search: '/api/business/search',
     update: '/api/business/update',
   },

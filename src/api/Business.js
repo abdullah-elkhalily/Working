@@ -2,6 +2,7 @@ import useSWR from 'swr';
 import { useMemo } from 'react';
 // utils
 import { fetcher, endpoints, sender } from 'src/utils/axios';
+// import image1 from "../assets/R.jpg";
 
 // ----------------------------------------------------------------------
 
@@ -24,6 +25,45 @@ export function useGetBusiness(page, per_page) {
   return memoizedValue;
 }
 
+// ----------------------------------------------------------------------
+
+
+
+// export function BusinessCounteries() {
+//   const URL = "api/admin/countries";
+//   const  data = useSWR(URL, fetcher);
+
+//   const memoizedValue = useMemo(
+//     () => ({
+//       counteries: data?.data || [],
+     
+  
+//     }),
+//     [data?.data ]
+//   );
+
+//   return memoizedValue;
+// }
+
+
+export function BusinessCounteries(businessDetails) {
+  // Define the URL for the API
+  const URL = "api/admin/countries";
+
+  // Fetch data using useSWR hook
+  const data = useSWR(URL, fetcher);
+
+  // Memoize the result
+  const memoizedValue = useMemo(
+    () => ({
+      counteries: data?.data || [],
+    }),
+    [data?.data]
+  );
+
+  // Return the memoized value
+  return memoizedValue;
+}
 // ----------------------------------------------------------------------
 
 export function useGetBusines(BusinessId) {
@@ -97,17 +137,62 @@ export const deleteBusiness = async (businessIds) => {
     return { success: false, error };
   }
 };
-
- 
-
 export const updateBusiness = async (businessId, requestBody) => {
-  const URL = [endpoints.Business.update + '/' + businessId, requestBody]; // Corrected the URL
+  const URL = endpoints.Business.update + '/' + businessId; 
   try {
-    const result = await sender(URL);
+    const result = await sender([URL, requestBody]);
     const success = result.message === "Updated Successfully";
     return { success, data: result.data };
   } catch (error) {
     console.error('Error updating business:', error);
+    return { success: false, error };
+  }
+};
+
+
+ 
+export const createBusiness = async (formData) => {
+ 
+//   const requestData = {
+   
+//     business_department_id:1,
+// store_id:987623,
+// is_store_id_visible:1,
+// // categories:725,726,890,
+// country_id:98,
+// city_id:1,
+// name:"store1",
+// description:"Test Category Data2",
+// // schedule_type:24/7,
+// lat:30.599237968267488,
+// lng:32.18080932274461,
+// address:"st-25",
+// mobile_number :1129977792,
+// mobile_number2:1129977792,
+// country:'egypt',
+// // fax:3456896,
+// email:"business@business.com",
+// website:"www.business.com",
+// whatsapp:"business@whatsap",
+// instagram:"business@instagram",
+// facebook:"business@facebook",
+// snapchat:"business@snapchat",
+//   };
+  const URL ='/api/business/create'; // Assuming this is correct
+
+  try {
+    console.log('Request Payload:', formData);
+
+    const result = await sender([URL, formData]);
+
+    console.log('API Response:', result);
+
+    // Adjust the success condition based on your API response
+    const success = result.message === 'Create Successfully';
+
+    return { success, data: result.data };
+  } catch (error) {
+    console.error('Error creating business:', error);
     return { success: false, error };
   }
 };

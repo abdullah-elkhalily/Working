@@ -33,36 +33,36 @@ export default function BusinessDetailsSummary({
 }) {
   const {
     id,
+   
     name,
-    sizes,
-    price,
-    coverUrl,
-    colors,
-    newLabel,
-    available,
-    priceSale,
-    saleLabel,
-    totalRatings,
-    totalReviews,
-    inventoryType,
-    subDescription,
+    country,
+    city,
+    no_of_orders, 
+    mobile_number,
+   
+    status,
+    address,
+  
+    description,
   } = Business;
 
   const existProduct = !!items?.length && items.map((item) => item.id).includes(id);
 
-  const isMaxQuantity =
-    !!items?.length &&
-    items.filter((item) => item.id === id).map((item) => item.quantity)[0] >= available;
+  // const isMaxQuantity =
+  //   !!items?.length &&
+  //   items.filter((item) => item.id === id).map((item) => item.quantity)[0] >= available;
 
   const defaultValues = {
     id,
+
     name,
-    coverUrl,
-    available,
-    price,
-    colors: colors[0],
-    size: sizes[4],
-    quantity: available < 1 ? 0 : 1,
+    country,
+    no_of_orders, 
+    mobile_number,
+   city,
+    status,
+    address,
+    description,
   };
 
   const methods = useForm({
@@ -104,28 +104,7 @@ export default function BusinessDetailsSummary({
       });
     } catch (error) {
       console.error(error);
-    }
-  }, [onAddCart, values]);
-
-  const renderPrice = (
-    <Box sx={{ typography: 'h5' }}>
-      {priceSale && (
-        <Box
-          component="span"
-          sx={{
-            color: 'text.disabled',
-            textDecoration: 'line-through',
-            mr: 0.5,
-          }}
-        >
-          {fCurrency(priceSale)}
-        </Box>
-      )}
-
-      {fCurrency(price)}
-    </Box>
-  );
-
+    } }, [onAddCart, values]);
   const renderShare = (
     <Stack direction="row" spacing={3} justifyContent="center">
       <Link
@@ -166,87 +145,33 @@ export default function BusinessDetailsSummary({
     </Stack>
   );
 
-  const renderColorOptions = (
+  const renderContry = (
     <Stack direction="row">
       <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
-        Color
+        Country:{country}
       </Typography>
 
-      <Controller
-        name="colors"
-        control={control}
-        render={({ field }) => (
-          <ColorPicker
-            colors={colors}
-            selected={field.value}
-            onSelectColor={(color) => field.onChange(color)}
-            limit={4}
-          />
-        )}
-      />
+      
     </Stack>
   );
 
   const renderSizeOptions = (
     <Stack direction="row">
       <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
-        Size
+     City:{city}
       </Typography>
 
-      <RHFSelect
-        name="size"
-        size="small"
-        helperText={
-          <Link underline="always" color="textPrimary">
-            Size Chart
-          </Link>
-        }
-        sx={{
-          maxWidth: 88,
-          [`& .${formHelperTextClasses.root}`]: {
-            mx: 0,
-            mt: 1,
-            textAlign: 'right',
-          },
-        }}
-      >
-        {sizes.map((size) => (
-          <MenuItem key={size} value={size}>
-            {size}
-          </MenuItem>
-        ))}
-      </RHFSelect>
+      
     </Stack>
   );
 
-  const renderQuantity = (
-    <Stack direction="row">
-      <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
-        Quantity
-      </Typography>
-
-      <Stack spacing={1}>
-        <IncrementerButton
-          name="quantity"
-          quantity={values.quantity}
-          disabledDecrease={values.quantity <= 1}
-          disabledIncrease={values.quantity >= available}
-          onIncrease={() => setValue('quantity', values.quantity + 1)}
-          onDecrease={() => setValue('quantity', values.quantity - 1)}
-        />
-
-        <Typography variant="caption" component="div" sx={{ textAlign: 'right' }}>
-          Available: {available}
-        </Typography>
-      </Stack>
-    </Stack>
-  );
+;
 
   const renderActions = (
     <Stack direction="row" spacing={2}>
       <Button
         fullWidth
-        disabled={isMaxQuantity || disabledActions}
+        // disabled={isMaxQuantity || disabledActions}
         size="large"
         color="warning"
         variant="contained"
@@ -265,7 +190,7 @@ export default function BusinessDetailsSummary({
 
   const renderSubDescription = (
     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-      {subDescription}
+      {description}
     </Typography>
   );
 
@@ -278,57 +203,36 @@ export default function BusinessDetailsSummary({
         typography: 'body2',
       }}
     >
-      <Rating size="small" value={totalRatings} precision={0.1} readOnly sx={{ mr: 1 }} />
-      {`(${fShortenNumber(totalReviews)} reviews)`}
+    
     </Stack>
   );
 
-  const renderLabels = (newLabel.enabled || saleLabel.enabled) && (
-    <Stack direction="row" alignItems="center" spacing={1}>
-      {newLabel.enabled && <Label color="info">{newLabel.content}</Label>}
-      {saleLabel.enabled && <Label color="error">{saleLabel.content}</Label>}
-    </Stack>
-  );
+ 
 
-  const renderInventoryType = (
-    <Box
-      component="span"
-      sx={{
-        typography: 'overline',
-        color:
-          (inventoryType === 'out of stock' && 'error.main') ||
-          (inventoryType === 'low stock' && 'warning.main') ||
-          'success.main',
-      }}
-    >
-      {inventoryType}
-    </Box>
-  );
+
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Stack spacing={3} sx={{ pt: 3 }} {...other}>
         <Stack spacing={2} alignItems="flex-start">
-          {renderLabels}
+         
 
-          {renderInventoryType}
+   
 
           <Typography variant="h5">{name}</Typography>
 
           {renderRating}
 
-          {renderPrice}
+
 
           {renderSubDescription}
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        {renderColorOptions}
+        {renderContry}
 
         {renderSizeOptions}
-
-        {renderQuantity}
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 

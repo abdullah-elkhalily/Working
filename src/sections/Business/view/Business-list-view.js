@@ -19,7 +19,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 // _mock
 import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 // api
-import { useGetBusiness, deleteBusiness, updateBusiness} from 'src/api/Business';
+import { useGetBusiness, deleteBusiness} from 'src/api/Business';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import {
@@ -46,11 +46,11 @@ import logo from 'src/components/logo';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Store' , maxWidth: 15},
+  { id: 'name', label: 'Store' , maxWidth: 40},
   { id: 'status', label: 'Status', width: 110 },
-  { id: 'Address', label: 'Address', width: 140 },
-  { id: 'Country', label: 'Country', width: 140 },
-  { id: 'Mobile', label: 'Mobile_Number', width: 140 },
+  { id: 'address', label: 'Address', width: 140 },
+  { id: 'country', label: 'Country', width: 140 },
+  { id: 'mobile_number', label: 'Mobile_Number', width: 140 },
   { id: 'no_of_orders', label: 'Orders', width: 140 },
   { id: '', width: 88 },
 
@@ -97,6 +97,7 @@ export default function BusinessListView() {
 
   useEffect(() => {
     if (Business.length) {
+   
       console.log(Business);
       setTableData(Business);
       setCount(meta?.total)
@@ -318,6 +319,8 @@ export default function BusinessListView() {
 
                   <TableNoData notFound={notFound} />
                 </TableBody>
+
+
               </Table>
             </Scrollbar>
           </TableContainer>

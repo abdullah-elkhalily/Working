@@ -7,7 +7,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 // ----------------------------------------------------------------------
 
-export function ProductItemSkeleton({ sx, ...other }) {
+export function BusinessItemSkeleton({ sx, ...other }) {
   return (
     <Paper
       variant="outlined"
@@ -36,7 +36,7 @@ export function ProductItemSkeleton({ sx, ...other }) {
   );
 }
 
-ProductItemSkeleton.propTypes = {
+BusinessItemSkeleton.propTypes = {
   sx: PropTypes.object,
 };
 

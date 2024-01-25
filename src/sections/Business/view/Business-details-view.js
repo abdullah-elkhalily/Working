@@ -16,18 +16,20 @@ import { PRODUCT_PUBLISH_OPTIONS } from 'src/_mock';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 // api
-import { useGetBusines} from 'src/api/Business';
+
 // components
 import Iconify from 'src/components/iconify';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 //
-import { ProductDetailsSkeleton } from '../Business-skeleton';
-import ProductDetailsReview from '../Business-details-review';
-import ProductDetailsSummary from '../Business-details-summary';
-import ProductDetailsToolbar from '../Business-details-toolbar';
-import ProductDetailsCarousel from '../Business-details-carousel';
-import ProductDetailsDescription from '../Business-details-description';
+import { BusinessItemSkeleton } from '../Business-skeleton';
+import BusinessDetailsReview from '../Business-details-review';
+import BusinessDetailsSummary from '../Business-details-summary';
+import BusinessDetailsToolbar from '../Business-details-toolbar';
+import BusinessDetailsCarousel from '../Business-details-carousel';
+import BusinessDetailsDescription from '../Business-details-description';
+import axios from 'axios';
+// import { endpoints } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -51,20 +53,49 @@ const SUMMARY = [
 
 // ----------------------------------------------------------------------
 
-export default function BusinessDetailsView({ id }) {
-  const { Business, BusinessLoading, BusinessError } = useGetBusines(id);
-
+export default function BusinessDetailsView( props) {
+ 
+  const  id  = props.id;
   const settings = useSettingsContext();
 
   const [currentTab, setCurrentTab] = useState('description');
 
   const [publish, setPublish] = useState('');
+  const [businessDetails, setBusinessDetails] = useState(null);
 
-  useEffect(() => {
-    if (Business) {
-      setPublish(Business?.publish);
-    }
-  }, [Business]);
+  const [loading, setLoading] = useState(true);
+const [Error, setError]=useState("")
+
+
+
+  
+useEffect(() => {
+  const apiUrl = `https://dapis.ma-moh.com/api/business/${id}`;
+
+  axios.get(apiUrl)
+    .then((response) => {
+      setBusinessDetails(response.data.data);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.error('Error fetching data:', error);
+      setError(error);
+      setLoading(false);
+    });
+
+}, [id]);
+
+useEffect(() => {
+  // Check if businessDetails has a value before setting publish
+  if (businessDetails) {
+    setPublish(businessDetails.publish);
+  }
+  console.log(businessDetails);
+}, [businessDetails]);
+
+
+
+
 
   const handleChangePublish = useCallback((newValue) => {
     setPublish(newValue);
@@ -74,12 +105,12 @@ export default function BusinessDetailsView({ id }) {
     setCurrentTab(newValue);
   }, []);
 
-  const renderSkeleton = <ProductDetailsSkeleton />;
+  const renderSkeleton = <BusinessItemSkeleton />;
 
   const renderError = (
     <EmptyContent
       filled
-      title={`${BusinessError?.message}`}
+      title={`${Error?.message}`}
       action={
         <Button
           component={RouterLink}
@@ -94,12 +125,12 @@ export default function BusinessDetailsView({ id }) {
     />
   );
 
-  const renderProduct = Business && (
+  const renderBusiness = businessDetails && (
     <>
-      <ProductDetailsToolbar
+      <BusinessDetailsToolbar
         backLink={paths.dashboard.Business.root}
-        editLink={paths.dashboard.Business.edit(`${Business?.id}`)}
-        // liveLink={paths.Business.details(`${Business?.id}`)}
+        editLink={paths.dashboard.Business.edit(`${businessDetails?.id}`)}
+        // liveLink={paths.Business.details(`${businessDetails?.id}`)}
         publish={publish || ''}
         onChangePublish={handleChangePublish}
         publishOptions={PRODUCT_PUBLISH_OPTIONS}
@@ -107,11 +138,11 @@ export default function BusinessDetailsView({ id }) {
 
       <Grid container spacing={{ xs: 3, md: 5, lg: 8 }}>
         <Grid xs={12} md={6} lg={7}>
-          <ProductDetailsCarousel Business={Business} />
+          <BusinessDetailsCarousel Business={businessDetails} />
         </Grid>
 
         <Grid xs={12} md={6} lg={5}>
-          <ProductDetailsSummary disabledActions Business={Business} />
+          <BusinessDetailsSummary disabledActions Business={businessDetails} />
         </Grid>
       </Grid>
 
@@ -155,7 +186,7 @@ export default function BusinessDetailsView({ id }) {
             },
             {
               value: 'reviews',
-              label: `Reviews (${Business.reviews.length})`,
+              label: `Reviews (${businessDetails.length})`,
             },
           ].map((tab) => (
             <Tab key={tab.value} value={tab.value} label={tab.label} />
@@ -163,15 +194,15 @@ export default function BusinessDetailsView({ id }) {
         </Tabs>
 
         {currentTab === 'description' && (
-          <ProductDetailsDescription description={Business?.description} />
+          <BusinessDetailsDescription description={businessDetails?.description} />
         )}
 
         {currentTab === 'reviews' && (
-          <ProductDetailsReview
-            ratings={Business.ratings}
-            reviews={Business.reviews}
-            totalRatings={Business.totalRatings}
-            totalReviews={Business.totalReviews}
+          <BusinessDetailsReview
+            ratings={businessDetails.ratings}
+            reviews={businessDetails.reviews}
+            totalRatings={businessDetails.totalRatings}
+            totalReviews={businessDetails.totalReviews}
           />
         )}
       </Card>
@@ -180,11 +211,11 @@ export default function BusinessDetailsView({ id }) {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      {BusinessLoading && renderSkeleton}
+      {loading && renderSkeleton}
 
-      {BusinessError && renderError}
+      {Error && renderError}
 
-      {Business && renderProduct}
+      {businessDetails && renderBusiness}
     </Container>
   );
 }

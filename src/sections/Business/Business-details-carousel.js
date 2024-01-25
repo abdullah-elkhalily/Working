@@ -61,12 +61,23 @@ const StyledThumbnailsContainer = styled('div')(({ length, theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function ProductDetailsCarousel({ product }) {
+export default function BusinessDetailsCarousel( {Business} ) {
   const theme = useTheme();
-
-  const slides = product.images.map((img) => ({
-    src: img,
-  }));
+console.log(Business.image);
+  const slides = [
+    {
+    src:Business.image
+    
+    },
+    {
+      src:Business.country_image,
+      
+      },
+      {
+        src:Business.image,
+        
+        },
+      ];
 
   const lightbox = useLightBox(slides);
 
@@ -112,14 +123,16 @@ export default function ProductDetailsCarousel({ product }) {
         ref={carouselLarge.carouselRef}
       >
         {slides.map((slide) => (
+
           <Image
             key={slide.src}
             alt={slide.src}
             src={slide.src}
             ratio="1/1"
-            onClick={() => lightbox.onOpen(slide.src)}
+            onClick={() => lightbox.onOpen(slides.src)}
             sx={{ cursor: 'zoom-in' }}
           />
+         
         ))}
       </Carousel>
 
@@ -186,6 +199,6 @@ export default function ProductDetailsCarousel({ product }) {
   );
 }
 
-ProductDetailsCarousel.propTypes = {
+BusinessDetailsCarousel.propTypes = {
   product: PropTypes.object,
 };
