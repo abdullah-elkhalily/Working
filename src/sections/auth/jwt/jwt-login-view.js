@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
@@ -23,13 +24,19 @@ import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import { CountryMobileLogin } from './Code-Country-Mobail-Form';
 
 // ----------------------------------------------------------------------
 
-export default function JwtLoginView() {
-  const { login } = useAuthContext();
 
+
+export default function JwtLoginView() {
+
+  const { login } = useAuthContext();
+ 
   const router = useRouter();
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [countryCode, setCountryCode] = useState('');
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -43,6 +50,9 @@ export default function JwtLoginView() {
     mobile: Yup.string().required('Mobile is required'),
     password: Yup.string().required('Password is required'),
   });
+  
+
+  
 
   const defaultValues = {
     mobile: '',
@@ -60,6 +70,22 @@ export default function JwtLoginView() {
     formState: { isSubmitting },
   } = methods;
 
+  // const onSubmit = handleSubmit(async (data) => {
+  //   try {
+  //     const mobile = countryCode + mobileNumber;
+      
+  //     await login?.(mobile, data.password);
+  
+  //     router.push(returnTo || PATH_AFTER_LOGIN);
+  //   } catch (error) {
+  //     console.error(error);
+  //     reset();
+  //     setErrorMsg(typeof error === 'string' ? error : error.message);
+  //   }
+  // });
+  
+  
+ 
   const onSubmit = handleSubmit(async (data) => {
     try {
       await login?.(data.mobile, data.password);
@@ -71,6 +97,24 @@ export default function JwtLoginView() {
       setErrorMsg(typeof error === 'string' ? error : error.message);
     }
   });
+  const handleCountryCodeChange = (code) => {
+    setCountryCode(code);
+  };
+
+  const handleMobileNumberChange = (e) => {
+    const enteredValue = e.target.value;
+  
+    if (enteredValue === countryCode) {
+      setMobileNumber('');
+    } else if (enteredValue.startsWith(countryCode)) {
+      setMobileNumber(enteredValue.slice(countryCode.length));
+    } else {
+      setMobileNumber(enteredValue);
+    }
+  };
+  
+  
+
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
@@ -88,10 +132,17 @@ export default function JwtLoginView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
+
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
-
-      <RHFTextField name="mobile" label="Mobile Number" />
-
+      <CountryMobileLogin onCountryCodeChange={handleCountryCodeChange} />
+<RHFTextField
+     
+          name="mobile"
+          label="Mobile Number"
+          value={countryCode + mobileNumber }
+          onChange={handleMobileNumberChange}
+          
+        />
       <RHFTextField
         name="password"
         label="Password"
