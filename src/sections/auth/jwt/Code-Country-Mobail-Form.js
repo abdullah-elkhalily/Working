@@ -56,20 +56,21 @@ export const CountryMobileLogin = ({ onCountryCodeChange}) => {
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      zIndex: 10, // Adjust the zIndex as needed
+      // Adjust the zIndex as needed
     }),
     option: (provided, state) => ({
       ...provided,
+    
       backgroundColor: state.isSelected ? '#3366FF' : 'white',
       color: state.isSelected ? 'white' : 'black',
     }),
   };
-  
+
   
   return (
     <>
-      <div>
-        <Select
+  <div >
+            <Select
           value={selectedCountry}
           onChange={handleCountryChange}
           options={countryOptions}

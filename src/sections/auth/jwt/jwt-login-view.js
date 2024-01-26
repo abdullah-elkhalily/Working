@@ -131,21 +131,26 @@ export default function JwtLoginView() {
   );
 
   const renderForm = (
-    <Stack spacing={2.5}>
-
+    <Stack spacing={2.5}
+style={{ position: 'relative' }}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
-      <CountryMobileLogin onCountryCodeChange={handleCountryCodeChange} />
-<RHFTextField
-     
-          name="mobile"
-          label="Mobile Number"
-          value={countryCode + mobileNumber }
-          onChange={handleMobileNumberChange}
-          
-        />
+      <CountryMobileLogin
+    onCountryCodeChange={handleCountryCodeChange}
+    style={{ position: 'absolute', zIndex: 99 }}
+  />
+
+    <RHFTextField
+      name="mobile"
+      label="Mobile Number"
+      value={countryCode + mobileNumber}
+      onChange={handleMobileNumberChange}
+      style={{ zIndex: -1 }}
+    />
+ 
       <RHFTextField
         name="password"
         label="Password"
+        style={{ zIndex: -1 }}
         type={password.value ? 'text' : 'password'}
         InputProps={{
           endAdornment: (
