@@ -2,14 +2,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
-import { RHFTextField } from 'src/components/hook-form';
-import zIndex from '@mui/material/styles/zIndex';
-import { Mobailvalidation } from './jwt-login-view';
 
-export const CountryMobileLogin = ({ onCountryCodeChange}) => {
+const CountryMobileLogin = ({ onCountryCodeChange, setIsSelectActive }) => {
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
-  const [countryCode, setCountryCode] = useState('');
+
+  const handleSelectFocus = () => {
+    setIsSelectActive(true);
+  };
+
+  const handleSelectBlur = () => {
+    setIsSelectActive(false);
+  };
+
+  const handleCountryChange = (selectedOption) => {
+    setSelectedCountry(selectedOption);
+    const countryCode = countries.find((country) => country.id === selectedOption.value)?.country_code || '';
+    onCountryCodeChange(countryCode);
+  };
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -46,37 +56,31 @@ export const CountryMobileLogin = ({ onCountryCodeChange}) => {
     ),
   }));
 
- 
-  const handleCountryChange = (selectedOption) => {
-    setSelectedCountry(selectedOption);
-    const countryCode = countries.find((country) => country.id === selectedOption.value)?.country_code || '';
-    // Update the country code immediately
-    onCountryCodeChange(countryCode);
-  };
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      // Adjust the zIndex as needed
+      // Add other control styles as needed
     }),
     option: (provided, state) => ({
       ...provided,
-    
+      zIndex: 99,
       backgroundColor: state.isSelected ? '#3366FF' : 'white',
       color: state.isSelected ? 'white' : 'black',
     }),
   };
 
-  
   return (
-    <>
-  <div >
-            <Select
-          value={selectedCountry}
-          onChange={handleCountryChange}
-          options={countryOptions}
-          styles={customStyles}
-        />
-      </div>
-    </>
+    <div style={{ position: 'relative' }}>
+      <Select
+        value={selectedCountry}
+        onChange={handleCountryChange}
+        options={countryOptions}
+        styles={customStyles}
+        onFocus={handleSelectFocus}
+        onBlur={handleSelectBlur}
+      />
+    </div>
   );
 };
+
+export default CountryMobileLogin;
