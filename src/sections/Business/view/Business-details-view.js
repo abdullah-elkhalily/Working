@@ -23,7 +23,7 @@ import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 //
 import { BusinessItemSkeleton } from '../Business-skeleton';
-import BusinessDetailsReview from '../Business-details-review';
+// import BusinessDetailsReview from '../Business-details-review';
 import BusinessDetailsSummary from '../Business-details-summary';
 import BusinessDetailsToolbar from '../Business-details-toolbar';
 import BusinessDetailsCarousel from '../Business-details-carousel';
@@ -197,14 +197,14 @@ useEffect(() => {
           <BusinessDetailsDescription description={businessDetails?.description} />
         )}
 
-        {currentTab === 'reviews' && (
+        {/* {currentTab === 'reviews' && (
           <BusinessDetailsReview
             ratings={businessDetails.ratings}
             reviews={businessDetails.reviews}
             totalRatings={businessDetails.totalRatings}
             totalReviews={businessDetails.totalReviews}
           />
-        )}
+        )} */}
       </Card>
     </>
   );

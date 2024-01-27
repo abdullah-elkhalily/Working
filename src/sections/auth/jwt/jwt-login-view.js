@@ -105,8 +105,8 @@ export default function JwtLoginView() {
       <RHFTextField
         name="mobile"
         label="Mobile Number"
-        value={countryCode + mobileNumber}
-        onChange={handleMobileNumberChange}
+        // value={countryCode + mobileNumber}
+        // onChange={handleMobileNumberChange}
         InputLabelProps={{
           style: { display: isSelectActive ? "none" : "block" },
         }}
