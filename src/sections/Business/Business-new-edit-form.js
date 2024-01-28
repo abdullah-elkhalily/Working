@@ -120,7 +120,7 @@ export default function BusinessNewEditForm({ currentBusiness }) {
       setValue("taxes", currentBusiness?.taxes || 0);
     }
   }, [currentBusiness?.taxes, includeTaxes, setValue]);
- 
+ const [displayMap,setdisplayMap]=useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
 
   const handleLocationChange = (location) => {
@@ -128,12 +128,11 @@ export default function BusinessNewEditForm({ currentBusiness }) {
     if (selectedLocation) {
       setValue('lat', location.lat);
       setValue('lng', location.lng);
-    }
-  
+    } };
 
-  };
-
-
+const butonLocation=()=>{
+setdisplayMap(!displayMap)
+}
 
 const handleCountryChange = (selectedCountry) => {
   console.log('Selected Country:', selectedCountry);
@@ -342,8 +341,21 @@ formData.lng = selectedLocation ? selectedLocation.lng : null;
                 InputLabelProps={{ shrink: true }}  /> */}
 
             
-            </Box>   
-            <BusinessMap onLocationChange={handleLocationChange} />   
+            </Box>  
+            <Stack>   
+           <Grid >  
+            <LoadingButton
+          variant="contained"
+          size="large"
+          onClick={butonLocation}
+        >
+          {displayMap ? " Choose Your Location" : "Done"}
+        </LoadingButton>  
+        </Grid> 
+        </Stack> 
+          
+        {displayMap === false && <BusinessMap onLocationChange={handleLocationChange} />}
+
             </Stack>
         </Card>
       </Grid>
