@@ -59,6 +59,7 @@ export default function BusinessNewEditForm({ currentBusiness }) {
     // country_id: Yup.number().required("Country is required").positive("Country must be a positive number"),
     //   // taxes: Yup.number(),
     // is_store_id_visible: Yup.boolean().required("Store visibility is required"),
+    // lat:Yup.string().required("the location is  requierd ")
   });
 
   const defaultValues = useMemo(
@@ -133,7 +134,9 @@ export default function BusinessNewEditForm({ currentBusiness }) {
 const butonLocation=()=>{
 setdisplayMap(!displayMap)
 }
-
+const slectLocation=()=>{
+  setdisplayMap(!displayMap)
+  }
 const handleCountryChange = (selectedCountry) => {
   console.log('Selected Country:', selectedCountry);
   setValue('country_id', selectedCountry);
@@ -188,7 +191,7 @@ formData.lng = selectedLocation ? selectedLocation.lng : null;
     }
   });
 
-  const [isStoreIdVisible, setIsStoreIdVisible] = useState(false);
+  // const [isStoreIdVisible, setIsStoreIdVisible] = useState(false);
 
 
 
@@ -328,33 +331,55 @@ formData.lng = selectedLocation ? selectedLocation.lng : null;
           onCountryChange={handleCountryChange}
           onCityChange={handleCityChange}
         />
-{/* 
-              <RHFTextField
-                name="lng"
-                label="lng"
-                type="number"
-                InputLabelProps={{ shrink: true }}/>
-              <RHFTextField
-                name="lat"
-                label="lat"
-                type="number"
-                InputLabelProps={{ shrink: true }}  /> */}
+
 
             
             </Box>  
             <Stack>   
-           <Grid >  
-            <LoadingButton
-          variant="contained"
-          size="large"
-          onClick={butonLocation}
-        >
-          {displayMap ? " Choose Your Location" : "Done"}
-        </LoadingButton>  
-        </Grid> 
+         <Grid>    
+           {!displayMap === false && <BusinessMap onLocationChange={handleLocationChange} />}
+            </Grid>
+
+
+
+
+
+
+
+            <Grid>
+  <LoadingButton
+    variant="contained"
+    size="large"
+    onClick={butonLocation}
+    style={{ display: displayMap ? "none" : "visible" }} >
+    Choose Your Location
+  </LoadingButton>
+  <LoadingButton
+  variant="contained"
+  size="large"
+  onClick={slectLocation}
+  style={{ display: selectedLocation ? "block" : "none" }}
+>
+ {!displayMap?"Edit Your Location ":"Done"} 
+</LoadingButton>
+
+</Grid>
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
         </Stack> 
           
-        {displayMap === false && <BusinessMap onLocationChange={handleLocationChange} />}
 
             </Stack>
         </Card>
