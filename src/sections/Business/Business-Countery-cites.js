@@ -15,7 +15,7 @@ export const CounteryCitesBusines = ({ onCountryChange, onCityChange }) => {
       // Fetch the list of countries
       const fetchCountries = async () => {
         try {
-          const response = await axios.get('https://sapis.ma-moh.com/api/countries', {
+          const response = await axios.get('https://dapis.ma-moh.com/api/countries', {
             headers: {
               'language': 'en',
               'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ export const CounteryCitesBusines = ({ onCountryChange, onCityChange }) => {
       
       // Fetch the list of cities based on the selected country
       try {
-        const response = await axios.get(`https://sapis.ma-moh.com/api/cities?&country_id=${countryId}`, {
+        const response = await axios.get(`https://dapis.ma-moh.com/api/cities?&country_id=${countryId}`, {
           headers: {
             'language': 'en',
             'Content-Type': 'application/json',

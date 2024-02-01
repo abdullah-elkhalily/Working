@@ -4,7 +4,8 @@ import { useMemo } from 'react';
 import { fetcher, endpoints, sender } from 'src/utils/axios';
 // import image1 from "../assets/R.jpg";
 import axios from 'axios';
-import { useAuthContext } from 'src/auth/hooks';
+// import { useAuthContext } from 'src/auth/hooks';
+import { paths } from 'src/routes/paths';
 
 // ----------------------------------------------------------------------
 
@@ -185,12 +186,12 @@ export const updateBusiness = async (businessId, requestBody) => {
 // facebook:"business@facebook",
 // snapchat:"business@snapchat",
 //   };
-//   const URL ='https://sapis.ma-moh.com//api/business/create'; // Assuming this is correct
+//   const URL ='https://dapis.ma-moh.com//api/business/create'; // Assuming this is correct
 
 //   try {
 //     console.log('Request Payload:', formData);
 
-//     const response = await axios.post('https://sapis.ma-moh.com/api/images/create', formData, {
+//     const response = await axios.post('https://dapis.ma-moh.com/api/images/create', formData, {
 //       headers: {
 //         'Content-Type': 'multipart/form-data',
 //         'Authorization': `Bearer ${auth?.user?.accessToken}`,
@@ -207,15 +208,16 @@ export const updateBusiness = async (businessId, requestBody) => {
 //   }
 // };
 export const createBusiness = async (formData, auth) => {
+
   try {
-    const result = await axios.post('https://sapis.ma-moh.com//api/business/create', formData, {
+    const result = await axios.post('https://dapis.ma-moh.com//api/business/create', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${auth?.user?.accessToken}`,
       }
       
     });
-  
+
     console.log('API Response:', result.data);
   } catch (error) {
     console.error('Error creating business:', error.result.data);

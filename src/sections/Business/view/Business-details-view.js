@@ -70,7 +70,7 @@ const [Error, setError]=useState("")
 
   
 useEffect(() => {
-  const apiUrl = `https://sapis.ma-moh.com/api/business/${id}`;
+  const apiUrl = `https://dapis.ma-moh.com/api/business/${id}`;
 
   axios.get(apiUrl)
     .then((response) => {

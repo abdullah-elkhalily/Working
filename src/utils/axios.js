@@ -62,7 +62,8 @@ export const endpoints = {
   product: {
     list: '/api/owner/my-products',
     delete: '/api/products/delete',
-    details: '/api/product/details',
+    details: '/api/products/',
+    create: '/api/products/create',
     search: '/api/product/search',
     update: '/api/products/update',
   },

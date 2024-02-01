@@ -53,8 +53,8 @@ export default function BusinessNewEditForm({ currentBusiness }) {
 
   const NewProductSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
-    images: Yup.array().min(1, "Images is required"),
-    image: Yup.string().required("Image is required"),
+    // images: Yup.array().min(1, "Images is required"),
+    // image: Yup.string().required("Image is required"),
     address: Yup.string().required("Address is required"),
     description: Yup.string().required("Description is required"),
     mobile_number:Yup.number().required("Mobile is required"),
@@ -64,7 +64,7 @@ export default function BusinessNewEditForm({ currentBusiness }) {
     // country: Yup.string().required("Country is required"),
       // taxes: Yup.number(),
     // is_store_id_visible: Yup.boolean().required("Store visibility is required"),
-    lat:Yup.string().required("the location is  requierd ")
+    // lat:Yup.string().required("the location is  requierd ")
   });
 
   const defaultValues = useMemo(
@@ -88,6 +88,9 @@ export default function BusinessNewEditForm({ currentBusiness }) {
       city: currentBusiness?.city || "",
       country_id: currentBusiness?.country_id || "",
       city_id: currentBusiness?.city_id || "",
+      lat:currentBusiness?.lat||4748,
+      log:currentBusiness?.long||1425,
+
       // lat: currentBusiness?.lat || selectedLocation.lat,
       // business_department_id: currentBusiness?.business_department_id || 0,
       // is_store_id_visible: createBusiness?.is_store_id_visible || true,
@@ -159,8 +162,6 @@ export default function BusinessNewEditForm({ currentBusiness }) {
     formData.business_department_id = 1; 
   formData.is_store_id_visible=1;
 
-    formData.lat = selectedLocation ? selectedLocation.lat : null;
-    formData.lng = selectedLocation ? selectedLocation.lng : null;
   
     if (currentBusiness) {
       try {
@@ -178,11 +179,18 @@ export default function BusinessNewEditForm({ currentBusiness }) {
         console.error("An error occurred during business update:", error);
       }
     } else {
+
+
+      formData.lat = selectedLocation ? selectedLocation.lat : null;
+      formData.lng = selectedLocation ? selectedLocation.lng : null;
+    
       try {
-        const success = await createBusiness(formData, auth);
+        const {success ,data}= await createBusiness(formData, auth);
   
         if (success) {
-          console.log("Business created successfully!");
+          router.push(paths.dashboard.Business.root);
+
+          console.log("Business created successfully!",data);
           // Handle redirection or any other action upon successful creation
         } else {
           console.error("Failed to create business.");
@@ -209,7 +217,7 @@ export default function BusinessNewEditForm({ currentBusiness }) {
       console.log(data);
       setValue("image", newFile.preview);
       try {
-        const response = await axios.post('https://sapis.ma-moh.com/api/images/create', data, {
+        const response = await axios.post('https://dapis.ma-moh.com/api/images/create', data, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${auth?.user?.accessToken}`,

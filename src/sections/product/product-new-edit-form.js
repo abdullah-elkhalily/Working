@@ -182,7 +182,7 @@ const { businessesCategories:Categories } = useGetBusinessByCategories(bussinesi
         }
       } else {
         try {
-          const response = await axios.post(`https://sapis.ma-moh.com/${endpoints.product.create}`, combinedData, {
+          const response = await axios.post(`https://dapis.ma-moh.com/${endpoints.product.create}`, combinedData, {
             headers: {
               'Content-Type': 'multipart/form-data',
               'Authorization': `Bearer ${auth?.user?.accessToken}`,
@@ -221,7 +221,7 @@ const { businessesCategories:Categories } = useGetBusinessByCategories(bussinesi
     console.log(data);
     setValue("image", newFile.preview);
     try {
-      const response = await axios.post('https://sapis.ma-moh.com/api/images/create', data, {
+      const response = await axios.post('https://dapis.ma-moh.com/api/images/create', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${auth?.user?.accessToken}`,
