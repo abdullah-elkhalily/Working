@@ -3,10 +3,13 @@ import { useMemo } from 'react';
 // utils
 import { fetcher, endpoints, sender } from 'src/utils/axios';
 // import image1 from "../assets/R.jpg";
+import axios from 'axios';
+import { useAuthContext } from 'src/auth/hooks';
 
 // ----------------------------------------------------------------------
 
 export function useGetBusiness(page, per_page) {
+
   const URL = [endpoints.Business.list, { params: { page, per_page } }];
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
 
@@ -151,8 +154,10 @@ export const updateBusiness = async (businessId, requestBody) => {
 
 
  
-export const createBusiness = async (formData) => {
- 
+// export const createBusiness = async (formData) => {
+//   console.log('Image URL:', image1);
+//   const auth = useAuthContext();
+
 //   const requestData = {
    
 //     business_department_id:1,
@@ -160,7 +165,7 @@ export const createBusiness = async (formData) => {
 // is_store_id_visible:1,
 // // categories:725,726,890,
 // country_id:98,
-// city_id:1,
+// city_id:80,
 // name:"store1",
 // description:"Test Category Data2",
 // // schedule_type:24/7,
@@ -169,6 +174,8 @@ export const createBusiness = async (formData) => {
 // address:"st-25",
 // mobile_number :1129977792,
 // mobile_number2:1129977792,
+// image: 'https://images.pexels.com/photos/1557652/pexels-photo-1557652.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', // Replace with the actual image URL
+
 // country:'egypt',
 // // fax:3456896,
 // email:"business@business.com",
@@ -178,21 +185,42 @@ export const createBusiness = async (formData) => {
 // facebook:"business@facebook",
 // snapchat:"business@snapchat",
 //   };
-  const URL ='/api/business/create'; // Assuming this is correct
+//   const URL ='https://sapis.ma-moh.com//api/business/create'; // Assuming this is correct
 
+//   try {
+//     console.log('Request Payload:', formData);
+
+//     const response = await axios.post('https://sapis.ma-moh.com/api/images/create', formData, {
+//       headers: {
+//         'Content-Type': 'multipart/form-data',
+//         'Authorization': `Bearer ${auth?.user?.accessToken}`,
+//       }
+//     });
+//     console.log('API Response:', result);
+
+//     const success = result.message === 'Create Successfully';
+
+//     return { success, data: result.data };
+//   } catch (error) {
+//     console.error('Error creating business:', error);
+//     return { success: false, error };
+//   }
+// };
+export const createBusiness = async (formData, auth) => {
   try {
-    console.log('Request Payload:', formData);
-
-    const result = await sender([URL, formData]);
-
-    console.log('API Response:', result);
-
-    // Adjust the success condition based on your API response
-    const success = result.message === 'Create Successfully';
-
-    return { success, data: result.data };
+    const result = await axios.post('https://sapis.ma-moh.com//api/business/create', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${auth?.user?.accessToken}`,
+      }
+      
+    });
+  
+    console.log('API Response:', result.data);
   } catch (error) {
-    console.error('Error creating business:', error);
-    return { success: false, error };
+    console.error('Error creating business:', error.result.data);
+    return { success: false, error: error.result.data };
   }
+ 
+  
 };

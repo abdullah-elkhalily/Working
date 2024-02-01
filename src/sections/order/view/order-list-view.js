@@ -1,64 +1,86 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 // @mui
-import { alpha } from '@mui/material/styles';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import Container from '@mui/material/Container';
-import TableBody from '@mui/material/TableBody';
-import IconButton from '@mui/material/IconButton';
-import TableContainer from '@mui/material/TableContainer';
+import { alpha } from "@mui/material/styles";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import Card from "@mui/material/Card";
+import Table from "@mui/material/Table";
+import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
+import Container from "@mui/material/Container";
+import TableBody from "@mui/material/TableBody";
+import IconButton from "@mui/material/IconButton";
+import TableContainer from "@mui/material/TableContainer";
 // routes
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-// _mock
-import { _orders, ORDER_STATUS_OPTIONS } from 'src/_mock';
+import { paths } from "src/routes/paths";
+import { useRouter } from "src/routes/hooks";
+
 // utils
-import { fTimestamp } from 'src/utils/format-time';
+import { fTimestamp } from "src/utils/format-time";
 // hooks
-import { useBoolean } from 'src/hooks/use-boolean';
+import { useBoolean } from "src/hooks/use-boolean";
 // components
-import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import Label from "src/components/label";
+import Iconify from "src/components/iconify";
+import Scrollbar from "src/components/scrollbar";
+import { ConfirmDialog } from "src/components/custom-dialog";
+import { useSettingsContext } from "src/components/settings";
+import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import {
   useTable,
   getComparator,
-  emptyRows,
   TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
-} from 'src/components/table';
+  TableSkeleton,
+} from "src/components/table";
 //
-import OrderTableRow from '../order-table-row';
-import OrderTableToolbar from '../order-table-toolbar';
-import OrderTableFiltersResult from '../order-table-filters-result';
+import OrderTableRow from "../order-table-row";
+import OrderTableToolbar from "../order-table-toolbar";
+import OrderTableFiltersResult from "../order-table-filters-result";
+
+// api
+import { useGetAllOrders } from "src/api/delivery";
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...ORDER_STATUS_OPTIONS];
+export const DELIVERY_ORDER_STATUS_OPTIONS = [
+  { value: 'Delivered done', label: 'Delivered done' },
+  { value: 'On demand', label: 'On demand' },
+  { value: 'canceled', label: 'Cancelled' },
+  { value: 'processing', label: 'processing' },
+  { value: 'Ready orders', label: 'Ready orders' },
+  { value: 'Waiting for receipt', label: 'Waiting for receipt' },
+];
+
+export const DELIVERY_STATUS_OPTIONS = {
+  DONE: "Delivered done",
+  ON_DEMAND: "On demand",
+  CANCELED: "canceled",
+  PROCESSING: "processing",
+  READY: "Ready orders",
+  Waiting_for_receipt:"Waiting for receipt",
+};
+
+const STATUS_OPTIONS = [
+  { value: "all", label: "All" },
+  ...DELIVERY_ORDER_STATUS_OPTIONS,
+];
 
 const TABLE_HEAD = [
-  { id: 'orderNumber', label: 'Order', width: 116 },
-  { id: 'name', label: 'Customer' },
-  { id: 'createdAt', label: 'Date', width: 140 },
-  { id: 'totalQuantity', label: 'Items', width: 120, align: 'center' },
-  { id: 'totalAmount', label: 'Price', width: 140 },
-  { id: 'status', label: 'Status', width: 110 },
-  { id: '', width: 88 },
+  { id: "order_no", label: "Order", width: 116 },
+  { id: "name", label: "Customer" },
+  { id: "order_date", label: "Date", width: 140 },
+  { id: "qty", label: "Items", width: 120, align: "center" },
+  { id: "total_price", label: "Price", width: 140 },
+  { id: "status", label: "Status", width: 110 },
+  { id: "", width: 88 },
 ];
 
 const defaultFilters = {
-  name: '',
-  status: 'all',
+  name: "",
+  status: "all",
   startDate: null,
   endDate: null,
 };
@@ -66,7 +88,7 @@ const defaultFilters = {
 // ----------------------------------------------------------------------
 
 export default function OrderListView() {
-  const table = useTable({ defaultOrderBy: 'orderNumber' });
+  const table = useTable({ defaultOrderBy: "orderNumber" });
 
   const settings = useSettingsContext();
 
@@ -74,7 +96,9 @@ export default function OrderListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_orders);
+  const { allOrders, ordersLoading } = useGetAllOrders();
+  // console.log(allOrders, ordersLoading)
+  const [tableData, setTableData] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -84,7 +108,7 @@ export default function OrderListView() {
       : false;
 
   const dataFiltered = applyFilter({
-    inputData: tableData,
+    inputData: allOrders,
     comparator: getComparator(table.order, table.orderBy),
     filters,
     dateError,
@@ -98,17 +122,21 @@ export default function OrderListView() {
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset =
-    !!filters.name || filters.status !== 'all' || (!!filters.startDate && !!filters.endDate);
+    !!filters.name ||
+    filters.status !== "all" ||
+    (!!filters.startDate && !!filters.endDate);
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
     (name, value) => {
       table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
+      setFilters((prevState) => {
+        return {
+          ...prevState,
+          [name]: value,
+        };
+      });
     },
     [table]
   );
@@ -124,7 +152,9 @@ export default function OrderListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+    const deleteRows = tableData.filter(
+      (row) => !table.selected.includes(row.id)
+    );
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -138,35 +168,33 @@ export default function OrderListView() {
     setFilters(defaultFilters);
   }, []);
 
-  const handleViewRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.order.details(id));
-    },
-    [router]
-  );
+  const handleViewRow = useCallback((id) => {
+    router.push(paths.dashboard.order.details(id));
+    return;
+  }, []);
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
-      handleFilters('status', newValue);
+      handleFilters("status", newValue);
     },
     [handleFilters]
   );
 
   return (
     <>
-      <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+      <Container maxWidth={settings.themeStretch ? false : "lg"}>
         <CustomBreadcrumbs
           heading="List"
           links={[
             {
-              name: 'Dashboard',
+              name: "Dashboard",
               href: paths.dashboard.root,
             },
             {
-              name: 'Order',
-              href: paths.dashboard.order.root,
+              name: "Delivery",
+              href: paths.dashboard.delivery.root,
             },
-            { name: 'List' },
+            { name: "List" },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -179,7 +207,8 @@ export default function OrderListView() {
             onChange={handleFilterStatus}
             sx={{
               px: 2.5,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
+              boxShadow: (theme) =>
+                `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
             }}
           >
             {STATUS_OPTIONS.map((tab) => (
@@ -191,25 +220,55 @@ export default function OrderListView() {
                 icon={
                   <Label
                     variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
+                      ((tab.value === "all" || tab.value === filters.status) &&
+                        "filled") ||
+                      "soft"
                     }
                     color={
-                      (tab.value === 'completed' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'cancelled' && 'error') ||
-                      'default'
+                      (tab.value === DELIVERY_STATUS_OPTIONS.DONE &&
+                        "success") ||
+                      (tab.value === DELIVERY_STATUS_OPTIONS.ON_DEMAND &&
+                        "warning") ||
+                      (tab.value === DELIVERY_STATUS_OPTIONS.CANCELED &&
+                        "error") ||
+                      (tab.value === DELIVERY_STATUS_OPTIONS.PROCESSING &&
+                        "secondary") ||
+                      (tab.value === DELIVERY_STATUS_OPTIONS.READY && "info") ||
+                      "default"
                     }
                   >
-                    {tab.value === 'all' && _orders.length}
-                    {tab.value === 'completed' &&
-                      _orders.filter((order) => order.status === 'completed').length}
+                    {tab.value === "all" && allOrders.length}
+                    {tab.value === DELIVERY_STATUS_OPTIONS.DONE &&
+                      allOrders.filter(
+                        (order) =>
+                          order.orders_status.name ===
+                          DELIVERY_STATUS_OPTIONS.DONE
+                      ).length}
 
-                    {tab.value === 'pending' &&
-                      _orders.filter((order) => order.status === 'pending').length}
-                    {tab.value === 'cancelled' &&
-                      _orders.filter((order) => order.status === 'cancelled').length}
-                    {tab.value === 'refunded' &&
-                      _orders.filter((order) => order.status === 'refunded').length}
+                    {tab.value === DELIVERY_STATUS_OPTIONS.ON_DEMAND &&
+                      allOrders.filter(
+                        (order) =>
+                          order.orders_status.name ===
+                          DELIVERY_STATUS_OPTIONS.ON_DEMAND
+                      ).length}
+                    {tab.value === DELIVERY_STATUS_OPTIONS.CANCELED &&
+                      allOrders.filter(
+                        (order) =>
+                          order.orders_status.name ===
+                          DELIVERY_STATUS_OPTIONS.CANCELED
+                      ).length}
+                    {tab.value === DELIVERY_STATUS_OPTIONS.PROCESSING &&
+                      allOrders.filter(
+                        (order) => order.orders_status.name === DELIVERY_STATUS_OPTIONS.PROCESSING
+                      ).length}
+                    {tab.value === DELIVERY_STATUS_OPTIONS.READY &&
+                      allOrders.filter(
+                        (order) => order.orders_status.name === DELIVERY_STATUS_OPTIONS.READY
+                      ).length}
+                    {tab.value === DELIVERY_STATUS_OPTIONS.Waiting_for_receipt &&
+                      allOrders.filter(
+                        (order) => order.orders_status.name === DELIVERY_STATUS_OPTIONS.Waiting_for_receipt
+                      ).length}
                   </Label>
                 }
               />
@@ -236,7 +295,7 @@ export default function OrderListView() {
             />
           )}
 
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+          <TableContainer sx={{ position: "relative", overflow: "unset" }}>
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
@@ -257,7 +316,10 @@ export default function OrderListView() {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <Table
+                size={table.dense ? "small" : "medium"}
+                sx={{ minWidth: 960 }}
+              >
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}
@@ -268,35 +330,34 @@ export default function OrderListView() {
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      allOrders.map((row) => row.id)
                     )
                   }
                 />
-
-                <TableBody>
-                  {dataFiltered
-                    .slice(
-                      table.page * table.rowsPerPage,
-                      table.page * table.rowsPerPage + table.rowsPerPage
-                    )
-                    .map((row) => (
-                      <OrderTableRow
-                        key={row.id}
-                        row={row}
-                        selected={table.selected.includes(row.id)}
-                        onSelectRow={() => table.onSelectRow(row.id)}
-                        onDeleteRow={() => handleDeleteRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
-                      />
-                    ))}
-
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
-                </TableBody>
+                {ordersLoading ? (
+                  [...Array(table.rowsPerPage)].map((i, index) => (
+                    <TableSkeleton key={index} sx={{ height: denseHeight }} />
+                  ))
+                ) : (
+                  <TableBody>
+                    {dataFiltered
+                      .slice(
+                        table.page * table.rowsPerPage,
+                        table.page * table.rowsPerPage + table.rowsPerPage
+                      )
+                      .map((row) => (
+                        <OrderTableRow
+                          key={row.id}
+                          row={row}
+                          selected={table.selected.includes(row.id)}
+                          onSelectRow={() => table.onSelectRow(row.id)}
+                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onViewRow={() => handleViewRow(row.id)}
+                        />
+                      ))}
+                    <TableNoData notFound={notFound} />
+                  </TableBody>
+                )}
               </Table>
             </Scrollbar>
           </TableContainer>
@@ -307,7 +368,6 @@ export default function OrderListView() {
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
@@ -320,7 +380,8 @@ export default function OrderListView() {
         title="Delete"
         content={
           <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
+            Are you sure want to delete{" "}
+            <strong> {table.selected.length} </strong> items?
           </>
         }
         action={
@@ -344,7 +405,6 @@ export default function OrderListView() {
 
 function applyFilter({ inputData, comparator, filters, dateError }) {
   const { status, name, startDate, endDate } = filters;
-
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
   stabilizedThis.sort((a, b) => {
@@ -358,14 +418,14 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   if (name) {
     inputData = inputData.filter(
       (order) =>
-        order.orderNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.customer.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        order.customer.email.toLowerCase().indexOf(name.toLowerCase()) !== -1
+        order.order_no.indexOf(name.toLowerCase()) !== -1 ||
+        order.user.full_name.toLowerCase().indexOf(name.toLowerCase()) !== -1
     );
   }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((order) => order.status === status);
+  if (status !== "all") {
+    inputData = inputData.filter(
+      (order) => order.orders_status.name === status
+    );
   }
 
   if (!dateError) {

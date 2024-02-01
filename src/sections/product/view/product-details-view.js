@@ -51,7 +51,8 @@ const SUMMARY = [
 
 // ----------------------------------------------------------------------
 
-export default function ProductDetailsView({ id }) {
+export default function ProductDetailsView(props ) {
+  const id=props.id
   const { product, productLoading, productError } = useGetProduct(id);
 
   const settings = useSettingsContext();
@@ -101,6 +102,7 @@ export default function ProductDetailsView({ id }) {
         editLink={paths.dashboard.product.edit(`${product?.id}`)}
         // liveLink={paths.product.details(`${product?.id}`)}
         publish={publish || ''}
+        status={product.status}
         onChangePublish={handleChangePublish}
         publishOptions={PRODUCT_PUBLISH_OPTIONS}
       />
@@ -155,7 +157,7 @@ export default function ProductDetailsView({ id }) {
             },
             {
               value: 'reviews',
-              label: `Reviews (${product.reviews.length})`,
+              label: `Reviews`,
             },
           ].map((tab) => (
             <Tab key={tab.value} value={tab.value} label={tab.label} />

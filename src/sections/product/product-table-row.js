@@ -49,10 +49,13 @@ export default function ProductTableRow({
     no_of_orders,
     qty
   } = row;
+  console.log(row);
+
 
   const confirm = useBoolean();
 
   const popover = usePopover();
+  
 const categoryNames = categories.map(cat => cat.name).join(', ');
   return (
     <>

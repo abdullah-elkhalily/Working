@@ -24,7 +24,7 @@ const CountryMobileLogin = ({ onCountryCodeChange, setIsSelectActive }) => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await axios.get('https://dapis.ma-moh.com/api/countries', {
+        const response = await axios.get('https://sapis.ma-moh.com/api/countries', {
           headers: {
             'language': 'en',
             'Content-Type': 'application/json',

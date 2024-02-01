@@ -1,12 +1,12 @@
-import useSWR from 'swr';
-import { useMemo } from 'react';
+import useSWR from "swr";
+import { useMemo } from "react";
 // utils
-import { fetcher, endpoints, sender } from 'src/utils/axios';
+import { fetcher, endpoints, sender } from "src/utils/axios";
 
 // ----------------------------------------------------------------------
 
 export function useGetProducts(page, per_page) {
-  const URL = [endpoints.product.list, {params : {page, per_page}}] ;
+  const URL = [endpoints.product.list, { params: { page, per_page } }];
 
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
 
@@ -28,20 +28,19 @@ export function useGetProducts(page, per_page) {
 // ----------------------------------------------------------------------
 
 export function useGetProduct(productId) {
-  const URL = productId ? [endpoints.product.details, { params: { productId } }] : null;
+  const URL = productId ? [`${endpoints.product.details}${productId}`] : null;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
-
+console.log(data?.data);
   const memoizedValue = useMemo(
     () => ({
-      product: data?.product,
+      product: data?.data,
       productLoading: isLoading,
       productError: error,
       productValidating: isValidating,
     }),
-    [data?.product, error, isLoading, isValidating]
+    [data?.data, error, isLoading, isValidating]
   );
-
   return memoizedValue;
 }
 
@@ -49,7 +48,6 @@ export function useGetProduct(productId) {
 
 export function useSearchProducts(query) {
   const URL = query ? [endpoints.product.search, { params: { query } }] : null;
-
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, {
     keepPreviousData: true,
   });
@@ -69,42 +67,60 @@ export function useSearchProducts(query) {
 }
 
 export const deleteProducts = async (productIds) => {
-  const URL = endpoints.product.delete ;
+  const URL = endpoints.product.delete;
   const deletedIds = [];
   const failedIds = [];
   try {
     await Promise.all(
       productIds.map(async (productId) => {
         try {
-          const deleteUrl = URL + '/' + productId;
-          const result =  await sender(deleteUrl);
+          const deleteUrl = URL + "/" + productId;
+          const result = await sender(deleteUrl);
           const success = result.message === "Deleted Successfully";
-          if(success) {
+          if (success) {
             return deletedIds.push(productId);
-          }else {
-            return failedIds.push({productId, message: result.message});
+          } else {
+            return failedIds.push({ productId, message: result.message });
           }
-          } catch (error) {
-            return failedIds.push({productId, message: error.errors});
-          }
+        } catch (error) {
+          return failedIds.push({ productId, message: error.errors });
+        }
       })
     );
-    return { deletedIds,  failedIds};
+    return { deletedIds, failedIds };
   } catch (error) {
-    console.error('Error deleting products:', error);
+    console.error("Error deleting products:", error);
     return { success: false, error };
   }
 };
 
 export const updateProduct = async (productId, requestBody) => {
-  const URL = [endpoints.product.update + '/' + productId, requestBody] ;
-
+  const URL = [endpoints.product.update + "/" + productId, requestBody];
   try {
-    const result =  await sender(URL);
+    const result = await sender(URL);
     const success = result.message === "Updated Successfully";
-    return {success, data: result.data};
+    return { success, data: result.data };
   } catch (error) {
-    console.error('Error updating product:', error);
+    console.error("Error updating product:", error);
     return { success: false, error };
   }
 };
+
+export function useGetCountry(countryId) {
+  const URL = countryId ? [`${endpoints.countries}${countryId}`] : null;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+
+
+  const memoizedValue = useMemo(
+    () => ({
+      country: data?.data,
+      countryLoading: isLoading,
+      countryError: error,
+      countryValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+  return memoizedValue;
+}
+

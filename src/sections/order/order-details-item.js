@@ -12,7 +12,6 @@ import { fCurrency } from 'src/utils/format-number';
 import Scrollbar from 'src/components/scrollbar';
 
 // ----------------------------------------------------------------------
-
 export default function OrderDetailsItems({
   items,
   shipping,
@@ -20,8 +19,10 @@ export default function OrderDetailsItems({
   taxes,
   subTotal,
   totalAmount,
-}) {
-  const renderTotal = (
+})
+{
+ const totalAmounts=parseInt(totalAmount ,10)+parseInt(shipping , 10)
+    const renderTotal = (
     <Stack
       spacing={2}
       alignItems="flex-end"
@@ -29,18 +30,19 @@ export default function OrderDetailsItems({
     >
       <Stack direction="row">
         <Box sx={{ color: 'text.secondary' }}>Subtotal</Box>
-        <Box sx={{ width: 160, typography: 'subtitle2' }}>{fCurrency(subTotal) || '-'}</Box>
-      </Stack>
+        <Box sx={{ width: 160, typography: 'subtitle2' }}>{totalAmount || '-'}</Box>
+      </Stack> 
 
       <Stack direction="row">
-        <Box sx={{ color: 'text.secondary' }}>Shipping</Box>
+        <Box sx={{ color: 'text.secondary' }}>Delivery Price</Box>
         <Box
           sx={{
             width: 160,
-            ...(shipping && { color: 'error.main' }),
+            ...(shipping),
+            color: 'green'
           }}
         >
-          {shipping ? `- ${fCurrency(shipping)}` : '-'}
+          {shipping ? `+ ${shipping}` : '-'}
         </Box>
       </Stack>
 
@@ -52,7 +54,7 @@ export default function OrderDetailsItems({
             ...(discount && { color: 'error.main' }),
           }}
         >
-          {discount ? `- ${fCurrency(discount)}` : '-'}
+          {discount ? `- ${discount}` : '-'}
         </Box>
       </Stack>
 
@@ -63,7 +65,7 @@ export default function OrderDetailsItems({
 
       <Stack direction="row" sx={{ typography: 'subtitle1' }}>
         <Box>Total</Box>
-        <Box sx={{ width: 160 }}>{fCurrency(totalAmount) || '-'}</Box>
+        <Box sx={{ width: 160 }}>{totalAmounts|| '-'}</Box>
       </Stack>
     </Stack>
   );
@@ -78,39 +80,41 @@ export default function OrderDetailsItems({
         }}
       >
         <Scrollbar>
-          {items.map((item) => (
-            <Stack
-              key={item.id}
-              direction="row"
-              alignItems="center"
-              sx={{
-                py: 3,
-                minWidth: 640,
-                borderBottom: (theme) => `dashed 2px ${theme.palette.background.neutral}`,
-              }}
-            >
-              <Avatar src={item.coverUrl} variant="rounded" sx={{ width: 48, height: 48, mr: 2 }} />
+          {items?.map((item)=>(
+             <Stack
+  key={item?.product?.id}
+  direction="row"
+  alignItems="center"
+  sx={{
+    py: 3,
+    minWidth: 640,
+    borderBottom: (theme) => `dashed 2px ${theme.palette.background.neutral}`,
+  }}
+>
+  <Avatar src={item?.product?.image} variant="rounded" sx={{ width: 48, height: 48, mr: 2 }} />
 
-              <ListItemText
-                primary={item.name}
-                secondary={item.sku}
-                primaryTypographyProps={{
-                  typography: 'body2',
-                }}
-                secondaryTypographyProps={{
-                  component: 'span',
-                  color: 'text.disabled',
-                  mt: 0.5,
-                }}
-              />
+  <ListItemText
+    primary={item?.product?.name}
+    // secondary={item?.sku}
+    primaryTypographyProps={{
+      typography: 'body2',
+    }}
+    secondaryTypographyProps={{
+      component: 'span',
+      color: 'text.disabled',
+      mt: 0.5,
+    }}
+  />
 
-              <Box sx={{ typography: 'body2' }}>x{item.quantity}</Box>
+  <Box sx={{ typography: 'body2' }}>x{item?.product?.qty}</Box>
 
-              <Box sx={{ width: 110, textAlign: 'right', typography: 'subtitle2' }}>
-                {fCurrency(item.price)}
-              </Box>
-            </Stack>
+  <Box sx={{ width: 110, textAlign: 'right', typography: 'subtitle2' }}>
+    {item?.product?.price} {item?.product?.currencies_symbole}
+  </Box>
+</Stack>
           ))}
+          
+        
         </Scrollbar>
 
         {renderTotal}
@@ -121,7 +125,7 @@ export default function OrderDetailsItems({
 
 OrderDetailsItems.propTypes = {
   discount: PropTypes.number,
-  items: PropTypes.array,
+  items: PropTypes.object,
   shipping: PropTypes.number,
   subTotal: PropTypes.number,
   taxes: PropTypes.number,

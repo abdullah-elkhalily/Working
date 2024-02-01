@@ -20,7 +20,12 @@ import ProductReviewNewForm from './product-review-new-form';
 
 // ----------------------------------------------------------------------
 
-export default function ProductDetailsReview({ totalRatings, totalReviews, ratings, reviews }) {
+export default function ProductDetailsReview(props) {
+  const totalRatings = props.totalRatings
+  const totalReviews = props.totalReviews
+  const ratings = props.ratings
+  const reviews = props.reviews
+  // { totalRatings, totalReviews, ratings, reviews }
   const review = useBoolean();
 
   const total = sumBy(ratings, (star) => star.starCount);
@@ -54,7 +59,7 @@ export default function ProductDetailsReview({ totalRatings, totalReviews, ratin
       }}
     >
       {ratings
-        .slice(0)
+        ?.slice(0)
         .reverse()
         .map((rating) => (
           <Stack key={rating.name} direction="row" alignItems="center">

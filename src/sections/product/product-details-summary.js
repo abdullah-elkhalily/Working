@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 // @mui
 import Box from '@mui/material/Box';
@@ -31,28 +31,34 @@ export default function ProductDetailsSummary({
   disabledActions,
   ...other
 }) {
+  const [color, setcolors] = useState(null)
+ 
   const {
     id,
     name,
     sizes,
     price,
     coverUrl,
-    colors,
     newLabel,
     available,
-    priceSale,
     saleLabel,
     totalRatings,
     totalReviews,
     inventoryType,
     subDescription,
+    qty,
+    price_before_discount_taxes,
+    price_before_discount,
+    currencies_symbole,
+    store_name
   } = product;
+ 
 
-  const existProduct = !!items?.length && items.map((item) => item.id).includes(id);
+  const existProduct = !!items?.length && items?.map((item) => item.id).includes(id);
 
   const isMaxQuantity =
     !!items?.length &&
-    items.filter((item) => item.id === id).map((item) => item.quantity)[0] >= available;
+    items?.filter((item) => item.id === id)?.map((item) => item?.quantity) >= available;
 
   const defaultValues = {
     id,
@@ -60,9 +66,14 @@ export default function ProductDetailsSummary({
     coverUrl,
     available,
     price,
-    colors: colors[0],
-    size: sizes[4],
+    // colors: colors,
+    size: sizes,
     quantity: available < 1 ? 0 : 1,
+    qty,
+    price_before_discount_taxes,
+    price_before_discount,
+    currencies_symbole,
+    store_name
   };
 
   const methods = useForm({
@@ -106,24 +117,32 @@ export default function ProductDetailsSummary({
       console.error(error);
     }
   }, [onAddCart, values]);
-
+  
   const renderPrice = (
     <Box sx={{ typography: 'h5' }}>
-      {priceSale && (
-        <Box
-          component="span"
-          sx={{
-            color: 'text.disabled',
-            textDecoration: 'line-through',
-            mr: 0.5,
-          }}
-        >
-          {fCurrency(priceSale)}
-        </Box>
-      )}
+      {price_before_discount!=0?<>
+        {{price_before_discount} && (
+      <Box
+        component="span"
+        sx={{
+          color: 'text.disabled',
+          textDecoration: 'line-through',
+          mr: 3,
+        }}
+      >
+        {price_before_discount}{currencies_symbole}
+      </Box>
 
-      {fCurrency(price)}
-    </Box>
+    )}
+        {price}{currencies_symbole}
+
+      </>:<>
+      {price}{currencies_symbole}
+      </>}
+   
+
+  </Box>
+
   );
 
   const renderShare = (
@@ -166,26 +185,26 @@ export default function ProductDetailsSummary({
     </Stack>
   );
 
-  const renderColorOptions = (
-    <Stack direction="row">
-      <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
-        Color
-      </Typography>
+  // const renderColorOptions = (
+  //   <Stack direction="row">
+  //     <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
+  //       Color
+  //     </Typography>
 
-      <Controller
-        name="colors"
-        control={control}
-        render={({ field }) => (
-          <ColorPicker
-            colors={colors}
-            selected={field.value}
-            onSelectColor={(color) => field.onChange(color)}
-            limit={4}
-          />
-        )}
-      />
-    </Stack>
-  );
+  //     <Controller
+  //       name="colors"
+  //       control={control}
+  //       render={({ field }) => (
+  //         <ColorPicker
+  //           colors={colors}
+  //           selected={field.value}
+  //           onSelectColor={(color) => field.onChange(color)}
+  //           limit={4}
+  //         />
+  //       )}
+  //     />
+  //   </Stack>
+  // );
 
   const renderSizeOptions = (
     <Stack direction="row">
@@ -210,7 +229,7 @@ export default function ProductDetailsSummary({
           },
         }}
       >
-        {sizes.map((size) => (
+        {sizes?.map((size) => (
           <MenuItem key={size} value={size}>
             {size}
           </MenuItem>
@@ -236,7 +255,7 @@ export default function ProductDetailsSummary({
         />
 
         <Typography variant="caption" component="div" sx={{ textAlign: 'right' }}>
-          Available: {available}
+          Available: {available}{qty}
         </Typography>
       </Stack>
     </Stack>
@@ -246,7 +265,7 @@ export default function ProductDetailsSummary({
     <Stack direction="row" spacing={2}>
       <Button
         fullWidth
-        disabled={isMaxQuantity || disabledActions}
+        // disabled={isMaxQuantity || disabledActions}
         size="large"
         color="warning"
         variant="contained"
@@ -257,7 +276,7 @@ export default function ProductDetailsSummary({
         Add to Cart
       </Button>
 
-      <Button fullWidth size="large" type="submit" variant="contained" disabled={disabledActions}>
+      <Button fullWidth size="large" type="submit" variant="contained" >
         Buy Now
       </Button>
     </Stack>
@@ -283,10 +302,10 @@ export default function ProductDetailsSummary({
     </Stack>
   );
 
-  const renderLabels = (newLabel.enabled || saleLabel.enabled) && (
+  const renderLabels = (newLabel?.enabled || saleLabel?.enabled) && (
     <Stack direction="row" alignItems="center" spacing={1}>
-      {newLabel.enabled && <Label color="info">{newLabel.content}</Label>}
-      {saleLabel.enabled && <Label color="error">{saleLabel.content}</Label>}
+      {newLabel?.enabled && <Label color="info">{newLabel.content}</Label>}
+      {saleLabel?.enabled && <Label color="error">{saleLabel.content}</Label>}
     </Stack>
   );
 
@@ -313,6 +332,8 @@ export default function ProductDetailsSummary({
 
           {renderInventoryType}
 
+
+          
           <Typography variant="h5">{name}</Typography>
 
           {renderRating}
@@ -323,10 +344,9 @@ export default function ProductDetailsSummary({
         </Stack>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
+        {sizes?.length>1?renderSizeOptions:null}
+        {/* {color?renderColorOptions:null} */}
 
-        {renderColorOptions}
-
-        {renderSizeOptions}
 
         {renderQuantity}
 

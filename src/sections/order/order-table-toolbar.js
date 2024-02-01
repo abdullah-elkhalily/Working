@@ -58,7 +58,7 @@ export default function OrderTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        <DatePicker
+        {/* <DatePicker
           label="Start date"
           value={filters.startDate}
           onChange={handleFilterStartDate}
@@ -70,9 +70,9 @@ export default function OrderTableToolbar({
           sx={{
             maxWidth: { md: 200 },
           }}
-        />
+        /> */}
 
-        <DatePicker
+        {/* <DatePicker
           label="End date"
           value={filters.endDate}
           onChange={handleFilterEndDate}
@@ -80,7 +80,7 @@ export default function OrderTableToolbar({
           sx={{
             maxWidth: { md: 200 },
           }}
-        />
+        /> */}
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField

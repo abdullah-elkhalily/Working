@@ -33,7 +33,7 @@ export default function ProductCreateView() {
         }}
       />
 
-      <ProductNewEditForm />
+      <ProductNewEditForm/>
     </Container>
   );
 }

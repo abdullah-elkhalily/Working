@@ -11,6 +11,8 @@ import Stack from '@mui/material/Stack';
 import Iconify from 'src/components/iconify';
 import { RouterLink } from 'src/routes/components';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { Typography } from '@mui/material';
+import Label from 'src/components/label';
 
 // ----------------------------------------------------------------------
 
@@ -18,14 +20,14 @@ export default function ProductDetailsToolbar({
   publish,
   backLink,
   editLink,
-  // liveLink,
+  liveLink,
   publishOptions,
   onChangePublish,
   sx,
+  status,
   ...other
 }) {
   const popover = usePopover();
-
   return (
     <>
       <Stack
@@ -47,21 +49,33 @@ export default function ProductDetailsToolbar({
 
         <Box sx={{ flexGrow: 1 }} />
 
-        {/* {publish === 'published' && (
+        {publish === 'published' && (
           <Tooltip title="Go Live">
             <IconButton component={RouterLink} href={liveLink}>
               <Iconify icon="eva:external-link-fill" />
             </IconButton>
           </Tooltip>
-        )} */}
-
-        <Tooltip title="Edit">
+        )}
+  <Stack spacing={0.5}>
+            <Stack spacing={1} direction="row" alignItems="center">
+            <Tooltip title="Edit">
           <IconButton component={RouterLink} href={editLink}>
             <Iconify icon="solar:pen-bold" />
           </IconButton>
         </Tooltip>
-
-        <LoadingButton
+              <Label
+                variant="soft"
+                color={
+                  (status === 'approved' && 'info') ||
+    'default'
+  }
+              >
+                {status}
+              </Label>
+            </Stack>
+            </Stack>
+       
+        {/* <LoadingButton
           color="inherit"
           variant="contained"
           loading={!publish}
@@ -71,7 +85,7 @@ export default function ProductDetailsToolbar({
           sx={{ textTransform: 'capitalize' }}
         >
           {publish}
-        </LoadingButton>
+        </LoadingButton> */}
       </Stack>
 
       <CustomPopover
@@ -80,7 +94,7 @@ export default function ProductDetailsToolbar({
         arrow="top-right"
         sx={{ width: 140 }}
       >
-        {publishOptions.map((option) => (
+        {publishOptions?.map((option) => (
           <MenuItem
             key={option.value}
             selected={option.value === publish}
@@ -107,4 +121,5 @@ ProductDetailsToolbar.propTypes = {
   publish: PropTypes.string,
   publishOptions: PropTypes.array,
   sx: PropTypes.object,
+  status: PropTypes.string
 };

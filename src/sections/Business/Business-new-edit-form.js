@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
+/* eslint-disable no-use-before-define */
+
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { useCallback, useMemo, useEffect, useState } from "react";
@@ -33,14 +32,18 @@ import FormProvider, {
   RHFSelect,
   RHFUpload,
   RHFTextField,
+  RHFUploadAvatar,
 } from "src/components/hook-form";
 import axios from "axios";
 import { CounteryCitesBusines } from "./Business-Countery-cites";
 import BusinessMap from "./Business-Map-Location";
+import { useAuthContext } from "src/auth/hooks";
+import { fData } from "src/utils/format-number";
 // ----------------------------------------------------------------------
 
 export default function BusinessNewEditForm({ currentBusiness }) {
   const router = useRouter();
+  const auth = useAuthContext();
 
   const mdUp = useResponsive("up", "md");
 
@@ -49,20 +52,19 @@ export default function BusinessNewEditForm({ currentBusiness }) {
   const [includeTaxes, setIncludeTaxes] = useState(false);
 
   const NewProductSchema = Yup.object().shape({
-    // name: Yup.string().required("Name is required"),
-    // images: Yup.array().min(1, "Images is required"),
-    // image: Yup.string().required("Image is required"),
-    // address: Yup.string().required("Address is required"),
-    // description: Yup.string().required("Description is required"),
-    // mobile_number:Yup.number().required("Mobile is required"),
-    // city:Yup.string().required("City is required"),
-    // country:Yup.string().required("Country is required"),
-    // email:Yup.string().required("Email is required"),
-    //   city_id: Yup.number().required("City is required").positive("City must be a positive number"),
-    // country_id: Yup.number().required("Country is required").positive("Country must be a positive number"),
-    //   // taxes: Yup.number(),
+    name: Yup.string().required("Name is required"),
+    images: Yup.array().min(1, "Images is required"),
+    image: Yup.string().required("Image is required"),
+    address: Yup.string().required("Address is required"),
+    description: Yup.string().required("Description is required"),
+    mobile_number:Yup.number().required("Mobile is required"),
+  
+    email:Yup.string().required("Email is required"),
+    //   city: Yup.string().required("City is required"),
+    // country: Yup.string().required("Country is required"),
+      // taxes: Yup.number(),
     // is_store_id_visible: Yup.boolean().required("Store visibility is required"),
-    // lat:Yup.string().required("the location is  requierd ")
+    lat:Yup.string().required("the location is  requierd ")
   });
 
   const defaultValues = useMemo(
@@ -87,15 +89,15 @@ export default function BusinessNewEditForm({ currentBusiness }) {
       country_id: currentBusiness?.country_id || "",
       city_id: currentBusiness?.city_id || "",
       // lat: currentBusiness?.lat || selectedLocation.lat,
-      business_department_id: currentBusiness?.business_department_id || 0,
-      is_store_id_visible: createBusiness?.is_store_id_visible || true,
+      // business_department_id: currentBusiness?.business_department_id || 0,
+      // is_store_id_visible: createBusiness?.is_store_id_visible || true,
 
       store_id: currentBusiness?.store_id || 0,
     }),
     [currentBusiness]
   );
 
-  const methods = useForm({
+  const methods = useForm({ 
     resolver: yupResolver(NewProductSchema),
     defaultValues,
   });
@@ -154,14 +156,12 @@ export default function BusinessNewEditForm({ currentBusiness }) {
   };
 
   const onSubmit = handleSubmit(async (formData) => {
-    console.log(formData);
-    //  setValue('is_store_id_visible',true);
+    formData.business_department_id = 1; 
+  formData.is_store_id_visible=1;
 
     formData.lat = selectedLocation ? selectedLocation.lat : null;
     formData.lng = selectedLocation ? selectedLocation.lng : null;
-    // if (cities.length === 1 && !formData.city_id) {
-    //   formData.city_id = cities[0].id;
-    // }
+  
     if (currentBusiness) {
       try {
         const { success, data } = await updateBusiness(
@@ -179,56 +179,60 @@ export default function BusinessNewEditForm({ currentBusiness }) {
       }
     } else {
       try {
-        const success = await createBusiness(formData);
-
+        const success = await createBusiness(formData, auth);
+  
         if (success) {
-          // router.push(paths.dashboard.Business.root);
-          console.log("Business updated successfully:");
+          console.log("Business created successfully!");
+          // Handle redirection or any other action upon successful creation
         } else {
-          console.error("Failed to update business:");
+          console.error("Failed to create business.");
         }
       } catch (error) {
-        console.error("An error occurred during business update:", error);
+        console.error("An error occurred during business creation:", error);
       }
     }
   });
+  
 
   // const [isStoreIdVisible, setIsStoreIdVisible] = useState(false);
-
-  const handleDrop = useCallback(
-    async (acceptedFiles) => {
-      if (acceptedFiles.length > 0) {
-        const files = acceptedFiles.map((file) => {
-          return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              resolve(event.target.result);
-            };
-            reader.readAsDataURL(file);
-          });
+  async function handleDropCover(acceptedFiles) {
+    if (currentBusiness) {
+      let file = acceptedFiles[0];
+      const newFile = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+      const data = {
+        image_file_name: newFile,
+        imageable_type: "Business",
+        imageable_id: currentBusiness?.id,
+      };
+      console.log(data);
+      setValue("image", newFile.preview);
+      try {
+        const response = await axios.post('https://sapis.ma-moh.com/api/images/create', data, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${auth?.user?.accessToken}`,
+          }
         });
-
-        const base64Strings = await Promise.all(files);
-
-        // Set the "image" field to the first base64 string
-        setValue("image", base64Strings[0], { shouldValidate: true });
+  
+        console.log('Image uploaded successfully:', response?.data?.data?.image);
+        setValue("image", response?.data?.data?.image);
+  
+      } catch (error) {
+        console.error('Error uploading image:', error);
       }
-    },
-    [setValue]
-  );
-
-  const handleRemoveFile = useCallback(
-    (inputFile) => {
-      const filtered = values.image.filter((file) => file !== inputFile);
-      setValue("image", filtered);
-    },
-    [setValue, values.image]
-  );
-
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue("image", []);
-  }, [setValue]);
-
+    } else {
+      const file = acceptedFiles[0]; // Get the first file from acceptedFiles
+      const newFile = Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+      if (file) {
+        setValue("image", newFile);
+      }
+    }
+  }
+  
   const renderDetails = (
     <>
       {mdUp && (
@@ -255,10 +259,33 @@ export default function BusinessNewEditForm({ currentBusiness }) {
               multiline
               rows={4}
             />
+             <Stack spacing={1.5}>
+              <Typography variant="subtitle">Cover Image</Typography>
+              <RHFUploadAvatar
+                name="image"
+                maxSize={3145728}
+                onDrop={handleDropCover}
+                helperText={
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      mt: 3,
+                      mx: "auto",
+                      display: "block",
+                      textAlign: "center",
+                      color: "text.disabled",
+                    }}
+                  >
+                    Allowed *.jpeg, *.jpg, *.png, *.gif
+                    <br /> max size of {fData(3145728)}
+                  </Typography>
+                }
+              />
+            </Stack>
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Images</Typography>
-              <RHFUpload
+              {/* <RHFUpload
                 multiple
                 thumbnail
                 name="image"
@@ -267,7 +294,7 @@ export default function BusinessNewEditForm({ currentBusiness }) {
                 onRemove={handleRemoveFile}
                 onRemoveAll={handleRemoveAllFiles}
                 onUpload={() => console.info("ON UPLOAD")}
-              />
+              /> */}
             </Stack>
           </Stack>
         </Card>
@@ -302,14 +329,7 @@ export default function BusinessNewEditForm({ currentBusiness }) {
                 md: "repeat(2, 1fr)",
               }}
             >
-              <RHFTextField name="code" label="Store Code" />
-
-              <RHFTextField
-                name="business_department_id"
-                label="business id"
-                type="number"
-              />
-              <RHFTextField name="store_id" label="store id" type="number" />
+             
 
               <RHFTextField
                 name="address"

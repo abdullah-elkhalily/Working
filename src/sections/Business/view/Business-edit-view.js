@@ -24,7 +24,7 @@ export default function BusinessEditView(props) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const apiUrl =`https://dapis.ma-moh.com${endpoints.Business.details}${id}`;
+    const apiUrl =`https://sapis.ma-moh.com${endpoints.Business.details}${id}`;
 
     axios.get(apiUrl)
       .then((response) => {

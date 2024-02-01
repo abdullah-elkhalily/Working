@@ -1,41 +1,47 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 // @mui
-import Container from '@mui/material/Container';
+import Container from "@mui/material/Container";
 // routes
-import { paths } from 'src/routes/paths';
+import { paths } from "src/routes/paths";
 // api
-import { useGetProduct } from 'src/api/product';
 // components
-import { useSettingsContext } from 'src/components/settings';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import { useSettingsContext } from "src/components/settings";
+import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 //
-import ProductNewEditForm from '../product-new-edit-form';
+import ProductNewEditForm from "../product-new-edit-form";
+import {  useEffect,  useState } from "react";
+import {  endpoints } from 'src/utils/axios';
+import axios from "axios";
+import { useGetProduct } from "src/api/product";
 
 // ----------------------------------------------------------------------
 
-export default function ProductEditView({ id }) {
-  const settings = useSettingsContext();
+export default function ProductEditView(props) {
+  const productId =props.id
 
-  const { product: currentProduct } = useGetProduct(id);
+  const { product:products  } = useGetProduct(productId)
+  
+  const settings = useSettingsContext();
+ 
 
   return (
-    <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+    <Container maxWidth={settings.themeStretch ? false : "lg"}>
       <CustomBreadcrumbs
         heading="Edit"
         links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: "Dashboard", href: paths.dashboard.root },
           {
-            name: 'Product',
+            name: "Product",
             href: paths.dashboard.product.root,
           },
-          { name: currentProduct?.name },
+          { name: products?.name },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },
         }}
       />
 
-      <ProductNewEditForm currentProduct={currentProduct} />
+      <ProductNewEditForm currentProduct={products} />
     </Container>
   );
 }

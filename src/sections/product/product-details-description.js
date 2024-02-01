@@ -4,7 +4,8 @@ import Markdown from 'src/components/markdown';
 
 // ----------------------------------------------------------------------
 
-export default function ProductDetailsDescription({ description }) {
+export default function ProductDetailsDescription(props) {
+  const description = props.description
   return (
     <Markdown
       children={description}

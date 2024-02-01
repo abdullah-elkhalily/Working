@@ -76,7 +76,7 @@ export default function ProductReviewItem({ review }) {
 
       {!!attachments?.length && (
         <Stack direction="row" flexWrap="wrap" spacing={1} sx={{ pt: 1 }}>
-          {attachments.map((attachment) => (
+          {attachments?.map((attachment) => (
             <Box
               component="img"
               key={attachment}
