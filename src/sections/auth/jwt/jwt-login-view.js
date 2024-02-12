@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -20,27 +19,28 @@ import FormProvider, { RHFTextField } from "src/components/hook-form";
 import CountryMobileLogin from "./Code-Country-Mobail-Form";
 import { useAuthContext } from "src/auth/hooks";
 
-export default function JwtLoginView() {
-
- const { login } = useAuthContext();
- 
+const JwtLoginView = () => {
+  const { login } = useAuthContext();
   const router = useRouter();
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [countryCode, setCountryCode] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const searchParams = useSearchParams();
   const returnTo = searchParams.get("returnTo");
   const password = useBoolean();
   const [isSelectActive, setIsSelectActive] = useState(false);
+  const [selectedCountryCode, setSelectedCountryCode] = useState("");
 
   const LoginSchema = Yup.object().shape({
-    mobile: Yup.string().required("Mobile is required"),
+    mobile: Yup.string()
+      .required("Mobile is required"),
     password: Yup.string().required("Password is required"),
+    countryCode: Yup.string().required("Country code is required"),
   });
+  
 
   const defaultValues = {
     mobile: "",
     password: "",
+    countryCode: "",
   };
 
   const methods = useForm({
@@ -51,49 +51,37 @@ export default function JwtLoginView() {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting }, } = methods;
+    formState: { isSubmitting, errors },
+  } = methods;
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       await login?.(data.mobile, data.password);
-      router.push(returnTo || PATH_AFTER_LOGIN);} catch (error) {
+
+      router.push(returnTo || PATH_AFTER_LOGIN);
+    } catch (error) {
       console.error(error);
       reset();
-      setErrorMsg(typeof error === "string" ? error : error.message);
+      setErrorMsg(typeof error === 'string' ? error : error.message);
     }
   });
 
   const handleCountryCodeChange = (code) => {
-    setCountryCode(code);
+    setSelectedCountryCode(code);
   };
-
-  const handleMobileNumberChange = (e) => {
-    const enteredValue = e.target.value;
-
-    if (enteredValue === countryCode) {
-      setMobileNumber("");
-    } else if (enteredValue.startsWith(countryCode)) {
-      setMobileNumber(enteredValue.slice(countryCode.length));
-    } else {
-      setMobileNumber(enteredValue);
-    }};
-
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
       <Typography variant="h4">Sign in to Minimal</Typography>
 
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2">New user?</Typography>
-        <Link
-          component={RouterLink}
-          href={paths.auth.jwt.register}
-          variant="subtitle2"
-        >
+
+        <Link component={RouterLink} href={paths.auth.jwt.register} variant="subtitle2">
           Create an account
         </Link>
       </Stack>
     </Stack>
   );
-
   const renderForm = (
     <Stack spacing={2.5} style={{ position: "relative" }}>
       {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
@@ -102,19 +90,26 @@ export default function JwtLoginView() {
         setIsSelectActive={setIsSelectActive}
       />
 
+      {errors.countryCode && !selectedCountryCode && (
+        <Alert severity="error">{errors.countryCode.message}</Alert>
+      )}
+
       <RHFTextField
         name="mobile"
         label="Mobile Number"
-        // value={countryCode + mobileNumber}
-        // onChange={handleMobileNumberChange}
+        error={errors.mobile !== undefined} 
+        helperText={errors.mobile && errors.mobile.message} 
         InputLabelProps={{
           style: { display: isSelectActive ? "none" : "block" },
         }}
       />
 
+
       <RHFTextField
         name="password"
         label="Password"
+        error={errors.password !== undefined} 
+        helperText={errors.password && errors.password.message} 
         InputLabelProps={{
           style: { display: isSelectActive ? "none" : "block" },
         }}
@@ -133,6 +128,7 @@ export default function JwtLoginView() {
           ),
         }}
       />
+
 
       <Link
         variant="body2"
@@ -161,11 +157,13 @@ export default function JwtLoginView() {
       {renderHead}
 
       <Alert severity="info" sx={{ mb: 3 }}>
-        Use mobile: <strong>0526247318</strong> / password:{" "}
-        <strong>12345678</strong>
+        Use mobile : <strong>0526247318</strong> / password :<strong> 12345678</strong>
       </Alert>
 
       {renderForm}
     </FormProvider>
+  
   );
-}
+};
+
+export default JwtLoginView;
